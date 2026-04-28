@@ -1,0 +1,29 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: 13.201.39.232
+        username: ec2-user
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          cd /home/ec2-user
+          rm -rf node-cicd-app
+          git clone https://github.com/surajpawar3074-tech/node-cicd-app.git
+          cd node-cicd-app
+          npm install
+          pkill node || true
+          nohup node app7.js > output.log 2>&1 &
